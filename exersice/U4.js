@@ -131,5 +131,22 @@ function nth(list, n) {
 }
 
 //4.17.4
+function deepEqual(a, b) {
+  if (a === b) return true;
 
+  if (a == null || typeof a != "object" ||b == null || typeof b != "object")//注意不是对象的情况——js中只有null的情况不属于object
+    return false;
+  
+  var propsInA = 0, propsInB = 0;
+  for (var prop in a)//在a中的属性
+    propsInA += 1;
+
+  for (var prop in b) {//在b中的属性
+    propsInB += 1;
+    if ((prop in b)!=(prop in a) || !deepEqual(a[prop], b[prop]))//接着比较a,b中属性的值
+      return false;//return就直接返回了不回继续操作
+  }
+  return propsInA == propsInB;
+}
+//a[prop]——a对象中某个属性    a.__proto__ a的原型链   a.prop❌
 
