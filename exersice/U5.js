@@ -3,7 +3,7 @@
 function gatherCorrelations(journal) {
     var phis = {};
     journal.forEach(function(entry) {
-      entry.events.forEach(function(event) {
+      entry.events.forEach(function(event) {//两层循环
         if (!(event in phis))
           phis[event] = phi(tableFor(event, journal));
       });
@@ -119,7 +119,7 @@ console.log(arrays.reduce(function(a, b) {
       return byName[p.mother] 
   }
   
-  console.log(average(ancestry.filter(mother).map(age)));
+  console.log(average(ancestry.filter(mother).map(age)));//map找的是mother的name
 
   //用person查找
   var differences = ancestry.filter(function(person) {
@@ -141,8 +141,7 @@ console.log(arrays.reduce(function(a, b) {
         groups[groupName] = [person];
     });
     return groups;
-  }
-  
+  }//传出的是人名的数组
 
   var Century = groupBy(ancestry, function(person) {
     return Math.ceil(person.died / 100);
