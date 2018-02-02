@@ -58,6 +58,8 @@ console.log("toString" in map);
 // → true
 
 //get或set用于指定属性的读取和修改函数
+//get用于修改已存在的属性，set用于添加
+
 var pile = {
     elements: ["eggshell", "orange peel", "worm"],
     get height() {
@@ -105,9 +107,9 @@ function rowHeights(rows) {
       });
       return blocks[0].map(function(_, lineNo) {
         return drawLine(blocks, lineNo);
-      }).join("\n");//换行符链接每行结果
+      }).join("\n");//换行符链接第一行和下划线
     }
-    return rows.map(drawRow).join("\n");
+    return rows.map(drawRow).join("\n");//换行符链接每行结果（将其从数组转换）
   }
   //绘制表格
   function repeat(string, times) {
@@ -236,15 +238,87 @@ StretchCell.prototype.minWidth = function() {
   };
 
   StretchCell.prototype.draw = function(width, height) {
-    return this.inner.draw(width, height);
-  };
-  //??
-  StretchCell.prototype.draw = function(width, height) {
-    var result = [];
-    for (var i = 0; i < height; i++) {
-      var line = this.inner [i]|| "";
-      result.push(line + repeat(" ", width - line.length));
-     }
-    return result;
+    console.log(this.inner);
+    return this.inner.draw(width, height);//因为有两个参数，inner只有一个，所以另一个是空格
   };
 
+//6.14.3
+1.
+function logFive(sequence) {
+  for (var i = 0; i < 5; i++) {
+    if (!sequence.next())
+      break;
+    console.log(sequence.current());
+  }
+}
+
+function ArraySeq(array) {
+  this.pos = -1;
+  this.array = array;
+}
+ArraySeq.prototype.next = function() {
+  if (this.pos >= this.array.length - 1)//统计数组中有几个数，以pos记
+    return false;
+  this.pos++;
+  return true;
+};
+ArraySeq.prototype.current = function() {
+  return this.array[this.pos];
+};
+
+function RangeSeq(from, to) {
+  this.pos = from - 1;
+  this.to = to;
+}
+RangeSeq.prototype.next = function() {
+  if (this.pos >= this.to)
+    return false;
+  this.pos++;
+  return true;
+};
+RangeSeq.prototype.current = function() {
+  return this.pos;
+};
+
+2.
+function logFive2(sequence) {
+  for (var i = 0; i < 5 && sequence != null; i++) {//直接看是否存在第i个数
+    console.log(sequence.head());
+    sequence = sequence.rest();
+  }
+}
+
+function ArraySeq2(array, offset) {
+  this.array = array;
+  this.offset = offset;
+}
+ArraySeq2.prototype.rest = function() {
+  return ArraySeq2.make(this.array, this.offset + 1);
+};
+ArraySeq2.prototype.head = function() {
+  return this.array[this.offset];
+};
+ArraySeq2.make = function(array, offset) {
+  if (offset == null) offset = 0;
+  if (offset >= array.length)
+    return null;
+  else
+    return new ArraySeq2(array, offset);
+};
+
+function RangeSeq2(from, to) {
+  this.from = from;
+  this.to = to;
+}
+RangeSeq2.prototype.rest = function() {
+  return RangeSeq2.make(this.from + 1, this.to);
+};
+RangeSeq2.prototype.head = function() {
+  return this.from;
+};
+RangeSeq2.make = function(from, to) {
+  if (from > to)
+    return null;
+  else
+    return new RangeSeq2(from, to);
+};
