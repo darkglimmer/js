@@ -7,24 +7,18 @@ function digitCounts(k, n) {
     return result.toString().split(k).length-1;
 }
 
-//2.??
-Map.prototype.filterKeys = function(key) {
-    var string = new Map.filter(
-      function (key,value) {
-          return (key.indexOf(key) > -1);
-      }
-  );
-  return string;
-  }
+//2.
+Map.prototype.filterKeys = function(func) {
+    return new Map([...this].filter(([k,v]) =>{
+        return func(k)
+    }));
+}
   
-  Map.prototype.filterValues = function(val) {
-      var number = new Map.filter(
-      function (key,value) {
-          return (value >= val);
-      }
-  );
-  return number;
-  }
+Map.prototype.filtervalues = function(func) {
+    return new Map([...this].filter(([k,v]) =>{
+        return func(v)
+    }));
+}
 
 //3.
 const flatten = (arr) => {
