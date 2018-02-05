@@ -91,7 +91,30 @@ const fillEmpty = (arr) => {Array.from(arr).map((v,i)=>{if(!(i in arr)) arr[i]='
 //array可以有空槽,ength会算空槽 undefined!=空槽 undefined属于有值的情况 
 
 //8
-//正则表达式
+(1)
+const extractStr = (str) => {
+    let result = []
+    let strArr = str.split(":")
+    for (var i = 1;i< strArr.length;i++){//从1开始因为第一个没有两个数组可以分
+      if(strArr[i].split(".").length > 1){
+        result.push(strArr[i].split(".")[0])//输出以"."划分后的第一个数组
+      }
+    }
+    return result
+  }
+(2)
+const extractStr = (str) => /* TODO */
+{
+    let result = [];
+    let targets = str.split(".").slice(0, -1);//去除空数组
+    targets.forEach(target=>{
+        let position = target.lastIndexOf(":");//lastIndexOf() 方法可返回一个指定的字符串值最后出现的位置
+        if( position >= 0){
+            result.push(target.substring(position + 1));//substring() 方法用于提取字符串中介于两个指定下标之间的字符。
+        }
+    });
+    return result;
+}
 
 //9
 const uniqueNums = (n) => {
