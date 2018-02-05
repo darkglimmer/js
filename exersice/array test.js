@@ -105,8 +105,115 @@ const uniqueNums = (n) => {
   }
 
 //10
+(1)
 const mergeSortedArray = function (A, B) {
     return A.concat(B).sort(function(a,b){return a>b?1:-1})//调用sort方法后，数组本身会被改变，即影响原数组
 }
+//sort()中定义了一个比较方式，和0比较，如果大于0，就把b排在a前。
+//如果不对sort()定义就通过ascii码比较
+
+(2)
+const mergeSortedArray = function (A, B) {
+    return A.concat(B).sort(function(a,b){return a.index - b.index;})
+}
 
 //11
+const partitionArray = function (nums, k) {
+    var arr = nums.sort(function(a,b){return a>b?1:-1});
+    for(var i = 0; i < arr.length; i++){
+        if(arr[i] >= k){
+            return i;
+        }
+    }
+    return arr.length;//如果是空数组
+}
+
+//12
+(1)
+const unique = (arr) => {
+    var result = [];
+    for(var i in arr){
+      if(result.indexOf(arr[i]) == -1){
+        result.push(arr[i]);
+      }
+    }
+    return result;
+  }
+(2)
+const unique = (arr) => [...new Set(arr)]//new Set([iterable]); Set 中的值总是唯一的,NaN和undefined都可以被存储在Set 中， NaN之间被视为相同的值
+//如果传递一个可迭代对象，它的所有元素将被添加到新的 Set中。如果不指定此参数或其值为null，则新的 Set为空。
+
+(3)
+const unique = (arr)  => Array.from(new Set(arr))//从一个类似数组或可迭代对象中创建一个新的数组实例。
+
+//13
+(1)
+const injectSections = (items, sections) => {
+    sections.sort(function(a,b){return a.index>b.index?1:-1;})
+    for(var i = 0; i < sections.length; i++){
+        items.splice(sections[i].index+i, 0, sections[i].content)//sections[i].index+i加i是为了保证顺序
+    }
+    return items
+  }
+//倒序传入
+  const injectSections = (items, sections) => {
+    sections.sort((a,b) => b.index - a.index)
+    sections.forEach((m)=>{
+        items.splice(m.index, 0, m.content)
+      })
+    return items
+  }
+//splice() 方法通过删除现有元素和/或添加新元素来更改一个数组的内容。
+  myFish.splice(2, 0, 'drum'); // 在索引为2的位置插入'drum'
+// myFish 变为 ["angel", "clown", "drum", "mandarin", "sturgeon"]
+
+myFish.splice(2, 1); // 从索引为2的位置删除一项（也就是'drum'这一项）
+// myFish 变为 ["angel", "clown", "mandarin", "sturgeon"]
+
+(2)
+const injectSections = (items, sections) => {
+    const res = items.map(item => [item]);
+    sections.forEach(section => {
+      res[section.index].unshift(section.content);
+    })
+    return Array.prototype.concat.apply([], res)//将一个个独立数组结合起来
+}
+
+//14
+(1)
+function solution(arr1,arr2){
+    var result = [];
+    for(var i in arr1){
+        if(arr2.indexOf(arr1[i]) > -1 && result.indexOf(arr1[i]) == -1){
+            result.push(arr[i]);
+        }
+    }
+    return result;
+}
+(2)
+function solution(arr1,arr2){
+    return a.filter(v => b.includes(v))//ES7
+}
+(3)
+function solution(arr1,arr2){
+    return Array.from(new Set(a.filter(v => bSet.has(v))))//ES6
+}
+//15
+function solution(arr1, arr2) {
+    var result = [];
+     for(var i in arr1){
+         if(arr2.indexOf(arr1[i]) > -1){
+             var num = arr2.indexOf(arr1[i])
+             result.push(arr[i]);
+             while(arr1[i++] == arr2[num++])
+             result.push(arr[i]);
+         }
+     }
+     return result;
+ };
+
+//16
+const isAnagram = (str1, str2) =>{
+    return str1.split("").sort().join('') === str2.split("").sort().join('');
+ }
+//字符串转换成数组再转换成字符串 
