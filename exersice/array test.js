@@ -240,3 +240,37 @@ const isAnagram = (str1, str2) =>{
     return str1.split("").sort().join('') === str2.split("").sort().join('');
  }
 //字符串转换成数组再转换成字符串 
+
+//17
+(1)
+function duplicates(arr) {
+    var a = arr.sort();    
+    var b=[];
+    for(var i in a){
+        if(a[i]==a[i-1] && b.indexOf(a[i])==-1){
+            b.push(a[i]); 
+        }
+    }
+    return b;
+}
+
+(2)
+function duplicates(arr) {
+  return arr.sort().filter((_, i) =>
+    arr[i] === arr[i + 1] && arr[i] !== arr[i - 1]
+  );
+}
+
+//18
+
+//20
+const rob = (nums) => {
+    var i = 0, e = 0;
+    for (var k = 0; k < nums.length; k++) {
+      var tmp = i;
+      i = nums[k] + e;
+      e = Math.max(tmp, e);
+    }
+    return Math.max(i, e);
+  }
+  
