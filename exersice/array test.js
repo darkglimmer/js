@@ -262,6 +262,31 @@ function duplicates(arr) {
 }
 
 //18
+(1)
+const merge = (arr) => {
+    let i = 0, len = arr.length, mid = len >> 1 , n = mid, arr2 = []
+    //右移运算符“>>”  后面接使指定值的所有位都右移规定的次数。
+    //右移一位相当于除2，右移n位相当于除以2的n次方。
+	while(i < n && mid < len) {
+		if(arr[i] < arr[mid]){
+		  arr2.push(arr[i++])
+		} else {
+			arr2.push(arr[mid++])
+		}
+	}
+	if(mid == len) {
+		arr.splice(0, 0, ...arr.splice(- len + n))
+	}
+	arr.splice(0, arr2.length, ...arr2)
+}
+(2)
+const merge = (arr) => 
+arr.forEach((v,i)=>{arr.push(...arr.splice(arr.indexOf(Math.min.apply(null,arr.slice(0,arr.length-i))),1));
+});
+//splice() 方法向/从数组中添加/删除项目，然后返回被删除的项目。可删除从 index 处开始的零个或多个元素，并且用参数列表中声明的一个或多个值来替换那些被删除的元素。
+
+//19
+
 
 //20
 const rob = (nums) => {
@@ -273,4 +298,111 @@ const rob = (nums) => {
     }
     return Math.max(i, e);
   }
-  
+
+//21
+(1)
+const compose = (...fuc) => {
+    return (x) => {
+      for(let i = fuc.length - 1; i>=0 ;i--){
+        x = fuc[i](x) 
+      }
+      return x
+    }
+  }
+
+(2)
+const compose = (...fns) => (data) => fns.reverse().reduce((data, fn) => fn(data), data)
+//reverse()将输入的内容倒置
+(3)
+const compose = (...funs) => (i) => funs.reduceRight((pre, cur) => cur(pre), i)
+
+//22
+var threeSum = function(nums) {
+    var result = [];
+    nums.sort((a,b) => a.index - b.index);
+    var len = nums.length;
+    for(var i = 0; i < len - 2; i++){
+        if(nums[i] > 0){
+            break;
+        }//若num[i]>0则之后无法凑成0
+        var j = i + 1; k = len - 1;
+        while(j < k){
+            var a = nums[i], b = nums[j], c = nums[k];//在i到len-1中凑成0
+            var sum = a + b + c;
+            if(sum < 0){
+                j++;
+            }
+            else if(sum > 0){
+                k--;
+            }
+            else{
+                result.push([a,b,c]);
+                while(nums[j] == b && j < k){
+                    j++;
+                }
+                while(nums[k] == c && j < k){
+                    k--;
+                }
+            }
+        }
+        while(nums[i + 1] == nums[i] && i < len - 2){
+            i++;
+        }
+    }
+    return result;
+    
+};
+
+//23
+var threeSumClosest = function(nums, target) {
+    var result,close;
+    nums.sort((a,b) => a.index - b.index);//从小到大排序
+    var len = nums.length;
+    for(var i = 0; i < len - 2; i++){
+        var j = i + 1; k = len - 1;
+        if(i == 0){
+            close = Math.abs(target - (nums[i] + nums[j] + nums[k]));
+        }
+        while(j < k){
+            var sum = nums[i] + nums[j] + nums[k];
+            if(sum < target){
+                if(target - sum <= close){
+                    close = target - sum;
+                    result = sum;
+                }
+                j++;
+            }
+            else if(sum > target){
+                if(sum - target <= close){
+                    close = sum - target;
+                    result = sum;
+                }
+                k--;
+            }
+            else{
+                close = 0;
+                return target;
+            }
+        }
+        while(nums[i + 1] == nums[i] && i < len - 2){
+            i++;
+        }
+    }
+    return result;
+};
+
+//24
+const partition = (arr) => {
+    var first = arr[0]
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] <= first) {
+            var j = i
+            while (arr[j - 1] && arr[j - 1] >= first) {
+                var t = arr[j]
+                arr[j] = arr[j - 1]
+                arr[j - 1] = t
+                j--
+            }
+        }
+    }
+  }
