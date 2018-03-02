@@ -392,6 +392,7 @@ var threeSumClosest = function(nums, target) {
 };
 
 //24
+(1)
 const partition = (arr) => {
     var first = arr[0]
     for (var i = 1; i < arr.length; i++) {
@@ -401,8 +402,96 @@ const partition = (arr) => {
                 var t = arr[j]
                 arr[j] = arr[j - 1]
                 arr[j - 1] = t
-                j--
+                j--//与所有比arr[0]小的数交换位置
             }
         }
     }
   }
+  (2)
+  const partition = (arr) => {
+    const swap = (a, i, j) => [a[i], a[j]] = [a[j], a[i]]//换位
+    
+    const v = arr[0]
+    let i = 0
+    let k = 1
+    let j = arr.length - 1
+    
+    while(k <= j) {
+      if(arr[k] < v) swap(arr, i++, k++)
+      else if(arr[k] > v) swap(arr, j--, k)
+      else k++
+    }
+  }
+
+//25
+var searchRange = function(nums,target){
+    if(nums.indexOf(target) == -1)
+        return [-1,-1];
+    let result = [];
+    if(nums.reverse().indexOf(target) != nums.indexOf(target)){
+        result.push(nums.indexOf(target))
+        result.push(nums.reverse().indexOf(target))
+    }
+    else{
+        result.push(nums.length - 1);
+    }
+    return result;
+};
+
+//26
+var rotate = function(matrix) {
+    var n = matrix.length;
+    for(var i = 0; i < n / 2; i++){
+        for(var j = i; j < n - 1 - i; j++){
+            var temp = matrix[i][j];
+            matrix[i][j] = matrix[n - 1 - j][i];
+            matrix[n - 1 - j][i] = matrix[n - 1 - i][n - 1 - j];
+            matrix[n - 1 - i][n - 1 - j] = matrix[j][n - 1 - i];
+            matrix[j][n - 1 - i] = temp; 
+        }
+    }
+};
+
+//27
+//两个皇后不处于同一行，同一列或一条对角线上。
+
+//28
+
+//29
+(1)
+const safeGet = (data, path) => {
+    let p = path.split('.');
+    for(let i=0;i<p.length;i++){
+      if(i===p.length-1){
+        return data[p[i]]
+      }else{
+        if(typeof data[p[i]] !== 'object'){
+          return undefined
+        }else{
+          data = data[p[i]]
+        }
+      }
+    }
+  }
+
+(2)
+const safeGet = (data, path) => {
+    return path.split('.').reduce((d,i)=>{return typeof d == 'undefined' ? d : d[i];},data);
+}
+//reduce逐步拓展
+
+//30
+
+//31
+(1)
+const getPageTags = () => {
+    var doms = document.getElementsByTagName('*')//获取页面元素
+    return [...new Set([...doms].map(dom => dom.tagName))] 
+}
+
+(2)
+const getPageTags = () => {
+    var doms = document.getElementsByTagName('*')//取得所有标签，doms是对象
+    var s = new Set([].slice.call(doms).map(dom => dom.tagName));//将doms分为一个对象数组，
+    return Array.from(s);//将集合转化为数组
+}
