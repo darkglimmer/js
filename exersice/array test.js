@@ -452,10 +452,88 @@ var rotate = function(matrix) {
     }
 };
 
-//27
+//27*
+//回溯法:http://blog.csdn.net/hackbuteer1/article/details/6657109
 //两个皇后不处于同一行，同一列或一条对角线上。
+var solveNQueens = function(n) {
+    var result = [];
+    var tmp = [];
+    function queen(a,cur){
+        if(cur == a.length){
+            tmp.push(a); 
+            return;
+        }
+        for(var i = 0; i < a.length; i++){
+            a[cur] = i;
+            var flag = true;
+            for(var j = 0; j < cur; j++){ 
+                if(a[cur] == a[j] || Math.abs(a[cur] - a[j]) == cur - j){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag){
+                queen(a,cur+1);
+            }
+        }
+    }
+    var a = [];
+    for(var i = 0; i < n; i++){
+        a[i] = 0;
+    }
+    queen(a,0);
+    while(tmp.length){ 
+        var sol = [];
+        for(var j = 0; j < n; j++){
+            var str = '';
+            var q = tmp.shift();
+            for(var k = 0; k < n; k++){
+                if(k == q){
+                    str = str + 'Q';
+                }
+                else{
+                    str = str + '.';
+                }
+            }
+            sol.push(str);
+        }
+        result.push(sol);
+    }
+    return result;
 
-//28
+};
+
+//28*
+
+var totalNQueens = function(n) {
+    var tmp = [];
+    function queen(a,cur){
+        if(cur == a.length){
+            tmp.push(a); 
+            return;
+        }
+        for(var i = 0; i < a.length; i++){
+            a[cur] = i;
+            var flag = true;
+            for(var j = 0; j < cur; j++){ 
+                if(a[cur] == a[j] || Math.abs(a[cur] - a[j]) == cur - j){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag){
+                queen(a,cur+1);
+            }
+        }
+    }
+    var a = [];
+    for(var i = 0; i < n; i++){
+        a[i] = 0;
+    }
+    queen(a,0);
+    var result = tmp.length / n;
+    return result;
+};
 
 //29
 (1)
@@ -480,7 +558,7 @@ const safeGet = (data, path) => {
 }
 //reduce逐步拓展
 
-//30
+//30*
 
 //31
 (1)
