@@ -1,3 +1,14 @@
+var simpleLevelPlan = [`
+......................
+..#................#..
+..#..............=.#..
+..#.........o.o....#..
+..#.@......#####...#..
+..#####............#..
+......#++++++++++++#..
+......##############..
+......................`];
+
 var GAME_LEVELS = [`                                                    
 ................................................................................
 ................................................................................
@@ -171,8 +182,8 @@ var GAME_LEVELS = [`
 ..................................................############################################################
 ..............................................................................................................
 `];
-var Level = class Level {
-  constructor(plan) {
+
+function Level(plan){
     let rows = plan.trim().split("\n").map(l => [...l]);//map将数组索引作为第二个参数传递给映射函数
     this.height = rows.length;
     this.width = rows[0].length;//关卡的宽度和高度
@@ -187,7 +198,6 @@ var Level = class Level {
         return "empty";//startActors映射函数返回"empty"此背景的正方形。
       });
     });
-  }
 }
 var State = class State {
   constructor(level, actors, status) {
@@ -499,7 +509,7 @@ function runAnimation(frameFunc) {
     }
     console.log("You've won!");
   }
-  
+
   function runLevel(level, Display) {
     let display = new Display(document.body, level);
     let state = State.start(level);
