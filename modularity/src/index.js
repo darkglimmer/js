@@ -1,4 +1,2 @@
 
-
-
 console.log("Hello world"); 

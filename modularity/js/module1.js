@@ -2,4 +2,5 @@
 function result(a){
     console.log('from module'+ a);
 }
-module.exports = result(1)
+result(1)
+module.exports = result
