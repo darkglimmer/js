@@ -196,8 +196,8 @@ function Level(plan){
         this.startActors.push(
           type.create(new Vec(x, y), ch));//对象的位置被存储为一个Vec对象，它是一个二维向量.
         return "empty";//startActors映射函数返回"empty"此背景的正方形。
-      });
     });
+  });
 }
 var State = class State {
   constructor(level, actors, status) {
@@ -287,7 +287,7 @@ var levelChars = {
   "@": Player, "o": Coin,
   "=": Lava, "|": Lava, "v": Lava
 };
-
+//将字符映射到背景网格类型或类的对象。
 function elt(name, attrs, ...children) {
   let dom = document.createElement(name);
   for (let attr of Object.keys(attrs)) {
@@ -297,24 +297,24 @@ function elt(name, attrs, ...children) {
     dom.appendChild(child);
   }
   return dom;
-}
+}//创建一个元素并给它一些属性和子节点
 var DOMDisplay = class DOMDisplay {
   constructor(parent, level) {
     this.dom = elt("div", {class: "game"}, drawGrid(level));
-    this.actorLayer = null;
+    this.actorLayer = null;//追踪包含参与者的元素，以便它们可以轻松移除和替换。
     parent.appendChild(this.dom);
   }
 
   clear() { this.dom.remove(); }
 }
-var scale = 20;
+var scale = 20;//scale常数给出了单个单位在屏幕上占用的像素数量
 
 function drawGrid(level) {
-  return elt("table", {
+  return elt("table", {//背景被绘制为一个<table>元素
     class: "background",
     style: `width: ${level.width * scale}px`
   }, ...level.rows.map(row =>
-    elt("tr", {style: `height: ${scale}px`},
+    elt("tr", {style: `height: ${scale}px`},//网格的每一行都变成一个表格行
         ...row.map(type => elt("td", {class: type})))
   ));
 }
@@ -327,14 +327,14 @@ function drawActors(actors) {
     rect.style.top = `${actor.pos.y * scale}px`;
     return rect;
   }));
-}
+}//一个DOM元素并基于该actor的属性设置该元素的位置和大小来绘制每个actor。值必须乘以scale从游戏单位到像素。
 DOMDisplay.prototype.setState = function(state) {
   if (this.actorLayer) this.actorLayer.remove();
   this.actorLayer = drawActors(state.actors);
   this.dom.appendChild(this.actorLayer);
   this.dom.className = `game ${state.status}`;
   this.scrollPlayerIntoView(state);
-};
+};//我们需要大量额外的簿记才能将对象与DOM元素相关联，并确保在对象消失时删除元素。
 DOMDisplay.prototype.scrollPlayerIntoView = function(state) {
   let width = this.dom.clientWidth;
   let height = this.dom.clientHeight;
@@ -363,18 +363,18 @@ Level.prototype.touches = function(pos, size, type) {
   var xStart = Math.floor(pos.x);
   var xEnd = Math.ceil(pos.x + size.x);
   var yStart = Math.floor(pos.y);
-  var yEnd = Math.ceil(pos.y + size.y);
+  var yEnd = Math.ceil(pos.y + size.y);//计算身体重叠，通过向上和向下四舍五入来获得框接触的背景广场的范围。
 
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       let isOutside = x < 0 || x >= this.width ||
                       y < 0 || y >= this.height;
       let here = isOutside ? "wall" : this.rows[y][x];
-      if (here == type) return true;
+      if (here == type) return true;//true当找到匹配的正方形时，我们循环通过四舍五入坐标找到的网格正方形块并返回。
     }
   }
   return false;
-};
+};/*在移动玩家或者一块熔岩之前，我们测试一下这个动作是否会把它带入墙内。如果是这样，我们完全取消这个动作。对这种碰撞的反应取决于演员的类型 - 玩家将停止，而熔岩块将反弹。*/
 State.prototype.update = function(time, keys) {
   let actors = this.actors
     .map(actor => actor.update(time, this, keys));
@@ -393,8 +393,8 @@ State.prototype.update = function(time, keys) {
     }
   }
   return newState;
-};
-function overlap(actor1, actor2) {
+};//状态update方法touches用来确定玩家是否触摸熔岩。
+function overlap(actor1, actor2) {//使用该overlap功能检测演员之间的重叠。它需要两个actor对象，并在它们触摸时返回true - 当它们沿着x轴和沿着y轴重叠时
   return actor1.pos.x + actor1.size.x > actor2.pos.x &&
          actor1.pos.x < actor2.pos.x + actor2.size.x &&
          actor1.pos.y + actor1.size.y > actor2.pos.y &&
@@ -402,14 +402,13 @@ function overlap(actor1, actor2) {
 }
 Lava.prototype.collide = function(state) {
   return new State(state.level, state.actors, "lost");
-};
-
+};//触摸熔岩演员设置游戏状态"lost"
 Coin.prototype.collide = function(state) {
   let filtered = state.actors.filter(a => a != this);
   let status = state.status;
   if (!filtered.some(a => a.type == "coin")) status = "won";
   return new State(state.level, filtered, status);
-};
+};//硬币在你触摸时消失，并将状态设置为"won"这是最后一枚硬币的时间。
 Lava.prototype.update = function(time, state) {
   let newPos = this.pos.plus(this.speed.times(time));
   if (!state.level.touches(newPos, this.size, "wall")) {
@@ -419,12 +418,13 @@ Lava.prototype.update = function(time, state) {
   } else {
     return new Lava(this.pos, this.speed.times(-1));
   }
-};
+};/*它通过将时间步长和当前速度的乘积加到旧的位置来计算一个新的位置。如果存在障碍物，行为取决于熔岩块的类型 - 滴下的熔岩有一个reset位置，当它碰到某物时它会跳回。弹跳熔岩通过将其乘以-1来反转其速度，以便它开始向相反的方向移动。*/
+
 var wobbleSpeed = 8, wobbleDist = 0.07;
 
 Coin.prototype.update = function(time) {
-  let wobble = this.wobble + time * wobbleSpeed;
-  let wobblePos = Math.sin(wobble) * wobbleDist;
+  let wobble = this.wobble + time * wobbleSpeed;//该wobble属性会增加以追踪时间
+  let wobblePos = Math.sin(wobble) * wobbleDist;//参数Math.sin来查找波形上的新位置。然后从其基本位置和基于该波形的偏移计算硬币的当前位置。
   return new Coin(this.basePos.plus(new Vec(0, wobblePos)),
                   this.basePos, wobble);
 };
@@ -440,9 +440,9 @@ Player.prototype.update = function(time, state, keys) {
   let movedX = pos.plus(new Vec(xSpeed * time, 0));
   if (!state.level.touches(movedX, this.size, "wall")) {
     pos = movedX;
-  }
+  }//玩家的运动按每个轴单独处理，因为碰到地板不应妨碍水平运动，撞墙不应停止坠落或跳跃运动。
 
-  let ySpeed = this.speed.y + time * gravity;
+  let ySpeed = this.speed.y + time * gravity;//玩家的垂直速度（ySpeed）首先加速以应对重力。
   let movedY = pos.plus(new Vec(0, ySpeed * time));
   if (!state.level.touches(movedY, this.size, "wall")) {
     pos = movedY;
@@ -452,7 +452,7 @@ Player.prototype.update = function(time, state, keys) {
     ySpeed = 0;
   }
   return new Player(pos, new Vec(xSpeed, ySpeed));
-};
+};//它为事件注册事件处理程序，"keydown"并且"keyup"当事件中的密钥代码存在于正在跟踪的代码集中时，会​​更新对象。
 function trackKeys(keys) {
   let down = Object.create(null);
   function track(event) {
@@ -480,7 +480,7 @@ function runAnimation(frameFunc) {
     }
     requestAnimationFrame(frame);
   }
-  function runLevel(level, Display) {
+  function runLevel(level, Display) {//接受一个Level对象和一个显示构造函数，并返回一个promise。
     let display = new Display(document.body, level);
     let state = State.start(level);
     let ending = 1;
@@ -501,11 +501,14 @@ function runAnimation(frameFunc) {
       });
     });
   }
+  /*等级完成（失败或获胜）后，再runLevel等待一秒（让用户看到会发生什么），然后清除显示，停止动画并解析对游戏结束状态的承诺。*/
   async function runGame(plans, Display) {
     for (let level = 0; level < plans.length;) {
       let status = await runLevel(new Level(plans[level]),
-                                  Display);
+                                  Display);//只要玩家死亡，当前的水平就会重新开始。
       if (status == "won") level++;
+      else
+        console.log("lives：" + (plans.length - level));
     }
     console.log("You've won!");
   }
@@ -530,5 +533,5 @@ function runAnimation(frameFunc) {
         }
       });
     });
-  }
+  }//通过按Esc键可以暂停（暂停）和取消暂停游戏。
   runGame(GAME_LEVELS, DOMDisplay);
