@@ -199,6 +199,33 @@ function Level(plan){
     });
   });
 }
+Lava.prototype.size = new Vec(1, 1);
+//生成不同的岩浆
+var Coin = class Coin {
+  constructor(pos, basePos, wobble) {
+    this.pos = pos;
+    this.basePos = basePos;
+    this.wobble = wobble;
+  }
+
+  get type() { return "coin"; }//每个硬币的起始阶段是随机的
+
+  static create(pos) {
+    let basePos = pos.plus(new Vec(0.2, 0.1));
+    return new Coin(basePos, basePos,
+                    Math.random() * Math.PI * 2);
+  }
+}
+
+Coin.prototype.size = new Vec(0.6, 0.6);
+//存储一个基本位置以及一个wobble跟踪弹跳运动的相位的属性
+
+var levelChars = {
+  ".": "empty", "#": "wall", "+": "lava",
+  "@": Player, "o": Coin,
+  "=": Lava, "|": Lava, "v": Lava
+};
+//将字符映射到背景网格类型或类的对象。
 var State = class State {
   constructor(level, actors, status) {
     this.level = level;
@@ -260,34 +287,6 @@ var Lava = class Lava {
     }
   }
 }
-
-Lava.prototype.size = new Vec(1, 1);
-//生成不同的岩浆
-var Coin = class Coin {
-  constructor(pos, basePos, wobble) {
-    this.pos = pos;
-    this.basePos = basePos;
-    this.wobble = wobble;
-  }
-
-  get type() { return "coin"; }//每个硬币的起始阶段是随机的
-
-  static create(pos) {
-    let basePos = pos.plus(new Vec(0.2, 0.1));
-    return new Coin(basePos, basePos,
-                    Math.random() * Math.PI * 2);
-  }
-}
-
-Coin.prototype.size = new Vec(0.6, 0.6);
-//存储一个基本位置以及一个wobble跟踪弹跳运动的相位的属性
-
-var levelChars = {
-  ".": "empty", "#": "wall", "+": "lava",
-  "@": Player, "o": Coin,
-  "=": Lava, "|": Lava, "v": Lava
-};
-//将字符映射到背景网格类型或类的对象。
 function elt(name, attrs, ...children) {
   let dom = document.createElement(name);
   for (let attr of Object.keys(attrs)) {
