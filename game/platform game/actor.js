@@ -1,4 +1,4 @@
-export function Vec (x, y){
+/*export*/ function Vec (x, y){
   this.x = x; 
   this.y = y;
 }
@@ -105,6 +105,8 @@ var playerXSpeed = 7;
 
 var gravity = 30;
 var jumpSpeed = 17;
+
+module.exports = Vec; 
 
 // function Monster(pos, plan){
 //     return new Monster(pos.plus(new Vec(0, -1)));
